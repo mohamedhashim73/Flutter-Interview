@@ -1,6 +1,10 @@
 # Flutter Interview Questions
 1- What is OOP | Main Principles | Examples ?
+
 2- What is a Compile-Time Error | Runtime Error ?
+
+3- What is a difference between Authentication | Authorization ?
+
 ### What is OOP (Object-Oriented Programming) ?
 
 **OOP (Object-Oriented Programming)** is a programming paradigm that organizes software design around **objects** rather than functions and logic. An object is a self-contained unit that consists of:
@@ -339,3 +343,22 @@ A **runtime error** occurs while the program is running (after compilation). The
 ---
 
 By understanding and handling compile-time and runtime errors effectively, you can build more robust and reliable Dart/Flutter applications.
+
+### Difference Between **Authentication** and **Authorization**
+
+| **Aspect**              | **Authentication**                                                                 | **Authorization**                                                                 |
+|--------------------------|------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
+| **Definition**           | Verifies **who you are**.                                                         | Determines **what you can do**.                                                  |
+| **Purpose**              | Confirms the identity of a user or system.                                         | Grants or restricts access to resources based on permissions.                    |
+| **When it Occurs**       | Happens first, during login or access attempts.                                    | Happens after successful authentication.                                         |
+| **Example**              | Logging in with a username and password.                                          | Checking if a user has permission to view a specific page or perform an action.  |
+| **Methods**              | - Passwords<br>- Biometrics (fingerprint, face recognition)<br>- OTPs             | - Role-Based Access Control (RBAC)<br>- Permissions<br>- Access Control Lists (ACL) |
+| **Focus**                | Identity verification.                                                            | Access control.                                                                  |
+| **Outcome**              | Grants access to the system.                                                      | Grants access to specific resources or actions.                                  |
+
+
+### Summary
+
+- **Authentication**: Verifies identity (e.g., login).
+- **Authorization**: Grants or restricts access (e.g., role-based permissions).
+- Both are essential for building secure and functional applications, especially in Flutter apps that interact with backend services.
