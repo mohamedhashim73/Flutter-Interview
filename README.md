@@ -1,6 +1,6 @@
 # Flutter Interview Questions
 1- What is OOP | Main Principles | Examples ?
-
+2- What is a Compile-Time Error | Runtime Error ?
 ### What is OOP (Object-Oriented Programming) ?
 
 **OOP (Object-Oriented Programming)** is a programming paradigm that organizes software design around **objects** rather than functions and logic. An object is a self-contained unit that consists of:
@@ -152,3 +152,190 @@ void main() {
 ---
 
 By embracing OOP in Flutter, you can build scalable, maintainable, and efficient applications. It’s a fundamental concept that will help you write cleaner and more organized code.
+
+### What is a Compile-Time Error?
+
+A **compile-time error** occurs when the code is being compiled (i.e., converted from source code to machine code). These errors are detected by the compiler before the program is executed. They usually result from syntax mistakes, type mismatches, or violations of language rules.
+
+#### Examples of Compile-Time Errors in Dart/Flutter:
+
+1. **Syntax Error**:
+   - Missing semicolon, parenthesis, or curly braces.
+   ```dart
+   void main() {
+     print("Hello, World") // Missing semicolon
+   }
+   ```
+   **Error**: `Expected ';' after this.`
+
+2. **Type Mismatch**:
+   - Assigning a value of the wrong type to a variable.
+   ```dart
+   int number = "Hello"; // Assigning a String to an int variable
+   ```
+   **Error**: `A value of type 'String' can't be assigned to a variable of type 'int'.`
+
+3. **Undefined Variable or Method**:
+   - Using a variable or method that hasn't been declared.
+   ```dart
+   void main() {
+     print(undefinedVariable); // Variable not defined
+   }
+   ```
+   **Error**: `The name 'undefinedVariable' isn't defined.`
+
+4. **Missing Required Arguments**:
+   - Not providing required parameters to a function or constructor.
+   ```dart
+   void greet(String name) {
+     print("Hello, $name");
+   }
+
+   void main() {
+     greet(); // Missing argument
+   }
+   ```
+   **Error**: `The argument type 'Null' can't be assigned to the parameter type 'String'.`
+
+5. **Incorrect Widget Usage**:
+   - Using a widget incorrectly in Flutter.
+   ```dart
+   class MyApp extends StatelessWidget {
+     @override
+     Widget build(BuildContext context) {
+       return Scaffold(
+         body: Center(
+           child: Text(123), // Passing an int instead of a String
+         ),
+       );
+     }
+   }
+   ```
+   **Error**: `The argument type 'int' can't be assigned to the parameter type 'String'.`
+
+---
+
+### What is a Runtime Error?
+
+A **runtime error** occurs while the program is running (after compilation). These errors are not detected by the compiler and often result from logical mistakes, invalid operations, or unexpected conditions (e.g., null values, out-of-bounds access).
+
+#### Examples of Runtime Errors in Dart/Flutter:
+
+1. **Null Reference Error**:
+   - Accessing a property or method on a null object.
+   ```dart
+   void main() {
+     String? name;
+     print(name.length); // Accessing length on a null value
+   }
+   ```
+   **Error**: `NoSuchMethodError: The getter 'length' was called on null.`
+
+2. **Division by Zero**:
+   - Attempting to divide a number by zero.
+   ```dart
+   void main() {
+     int a = 10;
+     int b = 0;
+     print(a ~/ b); // Integer division by zero
+   }
+   ```
+   **Error**: `IntegerDivisionByZeroException`
+
+3. **Out-of-Bounds Access**:
+   - Accessing an index that doesn't exist in a list.
+   ```dart
+   void main() {
+     List<int> numbers = [1, 2, 3];
+     print(numbers[5]); // Index out of range
+   }
+   ```
+   **Error**: `RangeError (index): Index out of range`
+
+4. **Invalid Cast**:
+   - Trying to cast an object to an incompatible type.
+   ```dart
+   void main() {
+     Object text = "Hello";
+     int number = text as int; // Invalid cast
+   }
+   ```
+   **Error**: `type 'String' is not a subtype of type 'int' in type cast`
+
+5. **Flutter-Specific Runtime Errors**:
+   - Using a `Future` without awaiting it.
+   ```dart
+   Future<String> fetchData() async {
+     await Future.delayed(Duration(seconds: 2));
+     return "Data";
+   }
+
+   void main() {
+     String data = fetchData(); // Forgot to await the Future
+     print(data);
+   }
+   ```
+   **Error**: `type 'Future<String>' is not a subtype of type 'String'`
+
+---
+
+### Key Differences Between Compile-Time and Runtime Errors
+
+| **Aspect**            | **Compile-Time Error**                          | **Runtime Error**                          |
+|------------------------|------------------------------------------------|--------------------------------------------|
+| **When it occurs**     | During compilation (before the program runs).  | During execution (after the program runs). |
+| **Detection**          | Detected by the compiler.                      | Not detected by the compiler.              |
+| **Causes**             | Syntax errors, type mismatches, etc.           | Logical errors, null values, etc.          |
+| **Examples**           | Missing semicolon, incorrect type usage.       | Null reference, division by zero.          |
+| **Fix**                | Fix the code before running.                   | Debug and handle exceptions.               |
+
+---
+
+### How to Handle Runtime Errors in Dart/Flutter
+
+1. **Null Safety**:
+   - Use Dart's null safety feature to avoid null reference errors.
+   ```dart
+   void main() {
+     String? name;
+     print(name?.length ?? "Name is null"); // Safe access
+   }
+   ```
+
+2. **Try-Catch Blocks**:
+   - Use `try-catch` to handle exceptions gracefully.
+   ```dart
+   void main() {
+     try {
+       int a = 10;
+       int b = 0;
+       print(a ~/ b);
+     } catch (e) {
+       print("Error: $e");
+     }
+   }
+   ```
+
+3. **Assertions**:
+   - Use `assert` to catch logical errors during development.
+   ```dart
+   void main() {
+     int age = -5;
+     assert(age >= 0, "Age cannot be negative");
+   }
+   ```
+
+4. **Flutter Error Handling**:
+   - Use `ErrorWidget` or `FlutterError.onError` to handle errors in Flutter apps.
+   ```dart
+   void main() {
+     FlutterError.onError = (details) {
+       print("Flutter error: ${details.exception}");
+     };
+     runApp(MyApp());
+   }
+   ```
+
+---
+
+By understanding and handling compile-time and runtime errors effectively, you can build more robust and reliable Dart/Flutter applications.
