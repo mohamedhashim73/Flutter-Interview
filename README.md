@@ -5,7 +5,9 @@
 
 3- What is a difference between Authentication | Authorization ?
 
-4- What is Solid Principles | Benfits ?
+4- Inherited Widget | Benifts ?
+
+5- What is Solid Principles | Benfits ?
 
 5- Difference between Dependency Injection | Inversion ?
 
@@ -367,7 +369,237 @@ By understanding and handling compile-time and runtime errors effectively, you c
 - **Authorization**: Grants or restricts access (e.g., role-based permissions).
 - Both are essential for building secure and functional applications, especially in Flutter apps that interact with backend services.
 
-### Whats is Solid Priciples | Benifts ?
+### 4 ) **InheritedWidget** in Flutter
+
+**InheritedWidget** is a special type of widget in Flutter that allows you to propagate data down the widget tree efficiently. It is used to share data (e.g., configuration, theme, state) across multiple widgets without having to pass the data explicitly through constructors.
+
+---
+
+### **Key Features of InheritedWidget**
+
+1. **Efficient Data Sharing**:
+   - Data is shared with all descendant widgets without rebuilding the entire tree.
+   - Only widgets that depend on the data will rebuild when the data changes.
+
+2. **Access via BuildContext**:
+   - Descendant widgets can access the data using the `BuildContext` and the `dependOnInheritedWidgetOfExactType` method.
+
+3. **Immutability**:
+   - Like all widgets, `InheritedWidget` is immutable. To update the data, you need to replace the `InheritedWidget` with a new one.
+
+4. **Common Use Cases**:
+   - Theming (e.g., `Theme.of(context)`).
+   - Localization (e.g., `Localizations.of(context)`).
+   - State management (e.g., `Provider` package is built on top of `InheritedWidget`).
+
+---
+
+### **How InheritedWidget Works**
+
+1. **Create an InheritedWidget**:
+   - Define a class that extends `InheritedWidget`.
+   - Add the data you want to share as fields.
+
+2. **Provide the InheritedWidget**:
+   - Place the `InheritedWidget` high in the widget tree so it can be accessed by descendant widgets.
+
+3. **Access the Data**:
+   - Use `BuildContext` to access the data from the `InheritedWidget`.
+
+4. **Rebuild Dependent Widgets**:
+   - When the data in the `InheritedWidget` changes, only the widgets that depend on it will rebuild.
+
+---
+
+### **Example of InheritedWidget**
+
+#### Step 1: Create an InheritedWidget
+```dart
+class MyInheritedWidget extends InheritedWidget {
+  final int data; // Data to share
+
+  MyInheritedWidget({
+    required this.data,
+    required Widget child,
+  }) : super(child: child);
+
+  // This method determines whether the widget should notify its dependents
+  @override
+  bool updateShouldNotify(MyInheritedWidget oldWidget) {
+    return oldWidget.data != data; // Notify if data changes
+  }
+
+  // Helper method to access the InheritedWidget from the context
+  static MyInheritedWidget? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<MyInheritedWidget>();
+  }
+}
+```
+
+#### Step 2: Provide the InheritedWidget
+```dart
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text("InheritedWidget Example")),
+        body: MyInheritedWidget(
+          data: 42, // Shared data
+          child: HomeScreen(),
+        ),
+      ),
+    );
+  }
+}
+```
+
+#### Step 3: Access the Data in Descendant Widgets
+```dart
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Access the shared data
+    final inheritedWidget = MyInheritedWidget.of(context);
+    final data = inheritedWidget?.data ?? 0;
+
+    return Center(
+      child: Text("Shared Data: $data"),
+    );
+  }
+}
+```
+
+---
+
+### **Real-World Example: Theme**
+
+Flutter's `Theme` is implemented using `InheritedWidget`. Here's how it works:
+
+1. **Define a Theme**:
+   ```dart
+   MaterialApp(
+     theme: ThemeData.light(),
+     home: HomeScreen(),
+   );
+   ```
+
+2. **Access the Theme**:
+   ```dart
+   class HomeScreen extends StatelessWidget {
+     @override
+     Widget build(BuildContext context) {
+       final theme = Theme.of(context); // Access the theme
+       return Scaffold(
+         appBar: AppBar(
+           title: Text("Theme Example"),
+         ),
+         body: Center(
+           child: Text(
+             "Hello, Flutter!",
+             style: theme.textTheme.headline4, // Use theme data
+           ),
+         ),
+       );
+     }
+   }
+   ```
+
+---
+
+### **Benefits of InheritedWidget**
+
+1. **Efficient Data Sharing**:
+   - Avoids passing data through multiple constructors (prop drilling).
+
+2. **Selective Rebuilds**:
+   - Only widgets that depend on the data will rebuild when the data changes.
+
+3. **Centralized Data Management**:
+   - Data is managed in one place and can be accessed by any descendant widget.
+
+4. **Foundation for State Management**:
+   - Many state management solutions (e.g., `Provider`, `Riverpod`) are built on top of `InheritedWidget`.
+
+---
+
+### **Limitations of InheritedWidget**
+
+1. **Boilerplate Code**:
+   - Requires creating a custom `InheritedWidget` class and helper methods.
+
+2. **Immutability**:
+   - Data cannot be updated directly; you need to replace the `InheritedWidget`.
+
+3. **Complexity**:
+   - Managing multiple `InheritedWidgets` can become cumbersome.
+
+---
+
+### **Alternative: Provider Package**
+
+The `Provider` package simplifies the use of `InheritedWidget` and adds additional features like state management. Here's an example:
+
+#### Using Provider:
+```dart
+import 'package:provider/provider.dart';
+
+class MyData extends ChangeNotifier {
+  int _data = 42;
+  int get data => _data;
+
+  void updateData(int newData) {
+    _data = newData;
+    notifyListeners();
+  }
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => MyData(),
+      child: MaterialApp(
+        home: HomeScreen(),
+      ),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final myData = Provider.of<MyData>(context);
+    return Scaffold(
+      appBar: AppBar(title: Text("Provider Example")),
+      body: Center(
+        child: Text("Shared Data: ${myData.data}"),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => myData.updateData(myData.data + 1),
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+```
+
+---
+
+### **Summary**
+
+- **InheritedWidget**:
+  - A powerful tool for sharing data across the widget tree.
+  - Used in Flutter's built-in widgets like `Theme` and `MediaQuery`.
+  - Requires some boilerplate code but is highly efficient.
+
+- **Provider**:
+  - A simpler and more flexible alternative to `InheritedWidget`.
+  - Built on top of `InheritedWidget` and adds state management capabilities.
+
+By understanding `InheritedWidget`, you can build more efficient and maintainable Flutter apps!
+
+### 5 ) Whats is Solid Priciples | Benifts ?
 
 The **SOLID principles** are a set of design principles in object-oriented programming that help developers create more maintainable, scalable, and flexible software. These principles are particularly useful when building applications in frameworks like **Flutter**, where clean and modular code is essential for managing complex UIs and state.
 
@@ -825,7 +1057,7 @@ Absolutely! Let’s dive deeper into **dependency injection (DI)** and how it al
 
 ---
 
-### 5 ) What is Dependency Injection (DI)?
+### 6 ) What is Dependency Injection (DI)?
 Dependency Injection is a design pattern where the **dependencies** of a class (e.g., services, repositories, etc.) are **provided from the outside** rather than being created internally. This makes the class more flexible, testable, and decoupled from specific implementations.
 
 ---
