@@ -489,7 +489,194 @@ Here’s an explanation of each SOLID principle, its benefits, and an example in
     }
   }
   ```
+The **Liskov Substitution Principle (LSP)** ensures that **derived classes (subclasses)** extend the **base class (superclass)** without **changing its behavior**. However, if a subclass violates LSP, it can indeed change the behavior of the base class in ways that break the program. Let’s explore **how a subclass can change the behavior of the base class** and how this violates LSP.
 
+---
+
+### How a Subclass Can Change Behavior (and Violate LSP)
+
+A subclass can change the behavior of the base class in the following ways:
+
+1. **Weakening Preconditions**:
+   - The subclass allows inputs that the base class would reject.
+   - Example: A subclass accepts invalid or unexpected inputs, leading to incorrect behavior.
+
+2. **Strengthening Postconditions**:
+   - The subclass produces outputs that violate the expectations of the base class.
+   - Example: A subclass returns values outside the expected range or format.
+
+3. **Throwing New Exceptions**:
+   - The subclass throws exceptions that the base class does not throw.
+   - Example: A subclass introduces new error conditions that the base class doesn’t handle.
+
+4. **Changing the Logic**:
+   - The subclass overrides a method in a way that changes the core logic of the base class.
+   - Example: A subclass implements a method incorrectly, leading to unexpected results.
+
+5. **Ignoring Invariants**:
+   - The subclass violates invariants (rules) that the base class relies on.
+   - Example: A subclass modifies internal state in a way that breaks the assumptions of the base class.
+
+---
+
+### Example: Violating LSP by Changing Behavior
+
+Let’s use a **Flutter example** to demonstrate how a subclass can change the behavior of the base class and violate LSP.
+
+#### Base Class: `Shape`
+```dart
+abstract class Shape {
+  double area();
+}
+```
+
+#### Subclass 1: `Rectangle` (Adheres to LSP)
+```dart
+class Rectangle extends Shape {
+  final double width;
+  final double height;
+
+  Rectangle({required this.width, required this.height});
+
+  @override
+  double area() {
+    return width * height;
+  }
+}
+```
+
+#### Subclass 2: `Circle` (Adheres to LSP)
+```dart
+class Circle extends Shape {
+  final double radius;
+
+  Circle({required this.radius});
+
+  @override
+  double area() {
+    return 3.14 * radius * radius;
+  }
+}
+```
+
+#### Subclass 3: `Triangle` (Violates LSP)
+```dart
+class Triangle extends Shape {
+  final double base;
+  final double height;
+
+  Triangle({required this.base, required this.height});
+
+  @override
+  double area() {
+    // Incorrect implementation: Forgot to divide by 2
+    return base * height; // This violates LSP
+  }
+}
+```
+
+---
+
+### How `Triangle` Changes Behavior
+1. **Incorrect Logic**:
+   - The `Triangle` class incorrectly calculates the area by forgetting to divide by 2. This changes the behavior of the `area()` method, violating the contract of the base class.
+
+2. **Unexpected Output**:
+   - If the base class expects the area to be calculated correctly, the `Triangle` subclass produces an incorrect result, breaking the program’s logic.
+
+---
+
+### Usage in Flutter
+```dart
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Create a list of shapes
+    final shapes = [
+      Rectangle(width: 10, height: 20),
+      Circle(radius: 5),
+      Triangle(base: 10, height: 10), // This violates LSP
+    ];
+
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text('LSP Example')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: shapes.map((shape) {
+              return Text(
+                'Area: ${shape.area()}',
+                style: TextStyle(fontSize: 20),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+---
+
+### Output
+The app will display:
+```
+Area: 200.0  (Rectangle)
+Area: 78.5   (Circle)
+Area: 100.0  (Triangle - Incorrect)
+```
+
+---
+
+### Why This Violates LSP
+1. **Behavioral Change**:
+   - The `Triangle` subclass changes the behavior of the `area()` method by returning an incorrect value.
+
+2. **Breaks Expectations**:
+   - The base class `Shape` expects the `area()` method to return the correct area of the shape. The `Triangle` subclass violates this expectation.
+
+3. **Program Incorrectness**:
+   - If the program relies on the correct calculation of the area, the `Triangle` subclass will cause the program to behave incorrectly.
+
+---
+
+### Correct Implementation of `Triangle`
+To adhere to LSP, the `Triangle` class must correctly implement the `area()` method:
+```dart
+class Triangle extends Shape {
+  final double base;
+  final double height;
+
+  Triangle({required this.base, required this.height});
+
+  @override
+  double area() {
+    return (base * height) / 2; // Correct implementation
+  }
+}
+```
+
+Now, the program will work correctly with `Triangle` as well.
+
+---
+
+### Summary of How Subclasses Can Change Behavior
+1. **Incorrect Logic**:
+   - Overriding methods with incorrect implementations.
+2. **Unexpected Outputs**:
+   - Producing outputs that violate the expectations of the base class.
+3. **New Exceptions**:
+   - Introducing new error conditions that the base class doesn’t handle.
+4. **Violating Invariants**:
+   - Breaking rules or assumptions that the base class relies on.
+
+By adhering to LSP, you ensure that subclasses extend the base class **without changing its behavior**, maintaining the correctness and reliability of the program.
 ---
 
 ### 4. **I - Interface Segregation Principle (ISP)**
